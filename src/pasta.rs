@@ -47,9 +47,6 @@ impl Group for pallas::Point {
     scalars: &[Self::Scalar],
     bases: &[Self::PreprocessedGroupElement],
   ) -> Self {
-    if scalars.len() >= 128 {
-      pasta_msm::pallas(bases, scalars)
-    } else {
       scalars
         .par_iter()
         .zip(bases)
@@ -153,9 +150,6 @@ impl Group for vesta::Point {
     scalars: &[Self::Scalar],
     bases: &[Self::PreprocessedGroupElement],
   ) -> Self {
-    if scalars.len() >= 128 {
-      pasta_msm::vesta(bases, scalars)
-    } else {
       scalars
         .par_iter()
         .zip(bases)
