@@ -52,7 +52,6 @@ impl Group for pallas::Point {
         .zip(bases)
         .map(|(scalar, base)| base.mul(scalar))
         .reduce(Ep::group_zero, |x, y| x + y)
-    }
   }
 
   fn preprocessed(&self) -> Self::PreprocessedGroupElement {
@@ -155,7 +154,6 @@ impl Group for vesta::Point {
         .zip(bases)
         .map(|(scalar, base)| base.mul(scalar))
         .reduce(Eq::group_zero, |x, y| x + y)
-    }
   }
 
   fn compress(&self) -> Self::CompressedGroupElement {
