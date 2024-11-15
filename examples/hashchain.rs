@@ -72,7 +72,7 @@ impl<G: Group> StepCircuit<G::Scalar> for HashChainCircuit<G> {
 
     // concatenate z_in and x_i
     let mut m = z_in.to_vec();
-    m.extend(x_i);
+    m.extend(x_i.iter().cloned());
 
     let elt = m
       .iter()
@@ -100,6 +100,10 @@ impl<G: Group> StepCircuit<G::Scalar> for HashChainCircuit<G> {
 
     Ok(vec![z_out])
   }
+
+  fn output(&self, z: &[G::Scalar]) -> Vec<G::Scalar> {
+    z.to_vec()
+  }
 }
 
 /// cargo run --release --example and
@@ -108,8 +112,8 @@ fn main() {
   println!("Nova-based hashchain example");
   println!("=========================================================");
 
-  let num_steps = 10;
-  for num_elts_per_step in [1024, 2048, 4096] {
+  let num_steps = 60;
+  for num_elts_per_step in [2] { //[1024, 2048, 4096] {
     // number of instances of AND per Nova's recursive step
     let circuit_primary = HashChainCircuit::new(num_elts_per_step);
     let circuit_secondary = TrivialCircuit::default();

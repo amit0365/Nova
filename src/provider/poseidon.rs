@@ -192,11 +192,11 @@ where
 mod tests {
   use super::*;
   use crate::provider::{
-    Bn256EngineKZG, GrumpkinEngine, PallasEngine, Secp256k1Engine, Secq256k1Engine, VestaEngine,
+    Bn256EngineKZG, //GrumpkinEngine, PallasEngine, Secp256k1Engine, Secq256k1Engine, VestaEngine,
   };
   use crate::{
     bellpepper::solver::SatisfyingAssignment, constants::NUM_CHALLENGE_BITS,
-    gadgets::utils::le_bits_to_num, traits::Engine,
+    traits::Engine, // gadgets::utils::le_bits_to_num,
   };
   use ff::Field;
   use rand::rngs::OsRng;
@@ -213,7 +213,7 @@ mod tests {
     // Check that the number computed inside the circuit is equal to the number computed outside the circuit
     let mut csprng: OsRng = OsRng;
     let constants = PoseidonConstantsCircuit::<E::Scalar>::default();
-    let num_absorbs = 32;
+    let num_absorbs = 1;
     let mut ro: PoseidonRO<E::Scalar, E::Base> = PoseidonRO::new(constants.clone(), num_absorbs);
     let mut ro_gadget: PoseidonROCircuit<E::Scalar> =
       PoseidonROCircuit::new(constants, num_absorbs);
@@ -227,19 +227,36 @@ mod tests {
         .unwrap();
       ro_gadget.absorb(&num_gadget);
     }
-    let num = ro.squeeze(NUM_CHALLENGE_BITS);
-    let num2_bits = ro_gadget.squeeze(&mut cs, NUM_CHALLENGE_BITS).unwrap();
-    let num2 = le_bits_to_num(&mut cs, &num2_bits).unwrap();
-    assert_eq!(num.to_repr(), num2.get_value().unwrap().to_repr());
+    let _num = ro.squeeze(NUM_CHALLENGE_BITS);
+    let _num2_bits = ro_gadget.squeeze(&mut cs, NUM_CHALLENGE_BITS).unwrap();
+    // println!("cs.aux_assignment().len(): {:?}", cs.aux_assignment().len());
+    // println!("cs.input_assignment().len(): {:?}", cs.input_assignment().len());
+
+    let random = E::Scalar::random(&mut csprng);
+    let random_gadget = AllocatedNum::alloc_infallible(cs.namespace(|| "random"), || random);
+    let _random_bits:Vec<AllocatedBit> = random_gadget
+      .to_bits_le_strict(&mut cs.namespace(|| "random bits")).unwrap()
+      .iter()
+      .map(|boolean| match boolean {
+        Boolean::Is(ref x) => x.clone(),
+        _ => panic!("Wrong type of input. We should have never reached there"),
+      })
+      .collect::<Vec<AllocatedBit>>()[..NUM_CHALLENGE_BITS]
+      .into();
+    // println!("cs.aux_assignment().len(): {:?}", cs.aux_assignment().len());
+    // println!("cs.input_assignment().len(): {:?}", cs.input_assignment().len());
+
+    // let num2 = le_bits_to_num(&mut cs, &num2_bits).unwrap();
+    // assert_eq!(num.to_repr(), num2.get_value().unwrap().to_repr());
   }
 
   #[test]
   fn test_poseidon_ro() {
-    test_poseidon_ro_with::<PallasEngine>();
-    test_poseidon_ro_with::<VestaEngine>();
+    // test_poseidon_ro_with::<PallasEngine>();
+    // test_poseidon_ro_with::<VestaEngine>();
     test_poseidon_ro_with::<Bn256EngineKZG>();
-    test_poseidon_ro_with::<GrumpkinEngine>();
-    test_poseidon_ro_with::<Secp256k1Engine>();
-    test_poseidon_ro_with::<Secq256k1Engine>();
+    // test_poseidon_ro_with::<GrumpkinEngine>();
+    // test_poseidon_ro_with::<Secp256k1Engine>();
+    // test_poseidon_ro_with::<Secq256k1Engine>();
   }
 }

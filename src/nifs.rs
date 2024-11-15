@@ -1,6 +1,8 @@
 //! This module implements a non-interactive folding scheme
 #![allow(non_snake_case)]
 
+use std::time::Instant;
+
 use crate::{
   constants::{NUM_CHALLENGE_BITS, NUM_FE_FOR_RO},
   errors::NovaError,
@@ -54,9 +56,11 @@ impl<E: Engine> NIFS<E> {
     // append U2 to transcript, U1 does not need to absorbed since U2.X[0] = Hash(params, U1, i, z0, zi)
     U2.absorb_in_ro(&mut ro);
 
+    let time_error_term = Instant::now();
     // compute a commitment to the cross-term
     let (T, comm_T) = S.commit_T(ck, U1, W1, U2, W2)?;
-
+    //println!("time_error_term: {:?}", time_error_term.elapsed());
+    
     // append `comm_T` to the transcript and obtain a challenge
     comm_T.absorb_in_ro(&mut ro);
 
@@ -68,7 +72,7 @@ impl<E: Engine> NIFS<E> {
 
     // fold the witness using `r` and `T`
     let W = W1.fold(W2, &T, &r)?;
-
+    
     // return the folded instance and witness
     Ok((
       Self {

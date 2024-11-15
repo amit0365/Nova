@@ -120,6 +120,10 @@ impl<Scalar: PrimeField + PrimeFieldBits> StepCircuit<Scalar> for Sha256Circuit<
 
     Ok(z_out)
   }
+
+  fn output(&self, z: &[Scalar]) -> Vec<Scalar> {
+    z.to_vec()
+  }
 }
 
 type C1 = Sha256Circuit<<E1 as Engine>::Scalar>;

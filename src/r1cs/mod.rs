@@ -13,6 +13,7 @@ use crate::{
   Commitment, CommitmentKey, CE,
 };
 use core::{cmp::max, marker::PhantomData};
+use std::time::Instant;
 use ff::Field;
 use once_cell::sync::OnceCell;
 
@@ -288,7 +289,9 @@ impl<E: Engine> R1CSShape<E> {
       .map(|(((a, b), c), d)| *a + *b - *c - *d)
       .collect::<Vec<E::Scalar>>();
 
+    let time_commit_error_term = Instant::now();
     let comm_T = CE::<E>::commit(ck, &T);
+    //println!("time_commit_error_term: {:?}", time_commit_error_term.elapsed());
 
     Ok((T, comm_T))
   }

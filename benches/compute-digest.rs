@@ -72,4 +72,8 @@ impl<F: PrimeField> StepCircuit<F> for NonTrivialCircuit<F> {
     }
     Ok(vec![y])
   }
+
+  fn output(&self, z: &[F]) -> Vec<F> {
+    z.to_vec()
+  }
 }

@@ -199,6 +199,10 @@ impl<G: Group> StepCircuit<G::Scalar> for AndCircuit<G> {
 
     Ok(z_in.to_vec())
   }
+
+  fn output(&self, z: &[G::Scalar]) -> Vec<G::Scalar> {
+    z.to_vec()
+  }
 }
 
 /// cargo run --release --example and
